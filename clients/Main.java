@@ -78,6 +78,8 @@ class Main
 
     model.addObserver( view );       // Add observer to the model
     window.setVisible(true);         // start Screen
+    
+    
   }
 
   /**
@@ -153,6 +155,7 @@ class Main
     window.setVisible(true);         // Make window visible
   }
 
+  
 
   public void startCollectionGUI_MVC(MiddleFactory mlf )
   {
@@ -171,4 +174,5 @@ class Main
     window.setVisible(true);         // Make window visible
   }
 
+  
 }
