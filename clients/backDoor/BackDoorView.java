@@ -28,12 +28,12 @@ public class BackDoorView implements Observer
   private final JTextField  theInputNo = new JTextField();
   private final JTextArea   theOutput  = new JTextArea();
   private final JScrollPane theSP      = new JScrollPane();
-  private final JButton     theBtClear = new JButton( CLEAR );
-  private final JButton     theBtRStock = new JButton( RESTOCK );
-  private final JButton     theBtQuery = new JButton( QUERY );
+  private final JButton     theBtClear = new JButton(CLEAR);
+  private final JButton     theBtRStock = new JButton(RESTOCK);
+  private final JButton     theBtQuery = new JButton(QUERY);
   
   private StockReadWriter theStock     = null;
-  private BackDoorController cont= null;
+  private BackDoorController cont = null;
 
   /**
    * Construct the view
@@ -42,62 +42,80 @@ public class BackDoorView implements Observer
    * @param x     x-cordinate of position of window on screen 
    * @param y     y-cordinate of position of window on screen  
    */
-  public BackDoorView(  RootPaneContainer rpc, MiddleFactory mf, int x, int y )
+  public BackDoorView(RootPaneContainer rpc, MiddleFactory mf, int x, int y)
   {
     try                                             // 
     {      
       theStock = mf.makeStockReadWriter();          // Database access
-    } catch ( Exception e )
+    } catch (Exception e)
     {
-      System.out.println("Exception: " + e.getMessage() );
+      System.out.println("Exception: " + e.getMessage());
     }
     Container cp         = rpc.getContentPane();    // Content Pane
     Container rootWindow = (Container) rpc;         // Root Window
     cp.setLayout(null);                             // No layout manager
-    rootWindow.setSize( W, H );                     // Size of Window
-    rootWindow.setLocation( x, y );
-    
-    Font f = new Font("Monospaced",Font.PLAIN,12);  // Font f is
+    rootWindow.setSize(W, H);                       // Size of Window
+    rootWindow.setLocation(x, y);
 
-    theBtQuery.setBounds( 16, 25+60*0, 80, 40 );    // Buy button 
+    // Set the background color to dark grey for the content pane
+    cp.setBackground(Color.DARK_GRAY);
+    
+    Font f = new Font("Monospaced", Font.PLAIN, 12);  // Font f is
+
+    theBtQuery.setBounds(16, 25 + 60 * 0, 80, 40);    // Query button 
     theBtQuery.addActionListener(                   // Call back code
-      e -> cont.doQuery( theInput.getText() ) );
-    cp.add( theBtQuery );                           //  Add to canvas
+      e -> cont.doQuery(theInput.getText()));
+    theBtQuery.setBackground(new Color(0, 0, 139)); // Dark blue
+    theBtQuery.setForeground(Color.WHITE);          // Set text color to white
+    theBtQuery.setBorderPainted(false);
+    cp.add(theBtQuery);                           // Add to canvas
 
-    theBtRStock.setBounds( 16, 25+60*1, 80, 40 );   // Check Button
+    theBtRStock.setBounds(16, 25 + 60 * 1, 80, 40);   // Restock Button
     theBtRStock.addActionListener(                  // Call back code
-      e -> cont.doRStock( theInput.getText(),
-                          theInputNo.getText() ) );
-    cp.add( theBtRStock );                          //  Add to canvas
+      e -> cont.doRStock(theInput.getText(), theInputNo.getText()));
+    theBtRStock.setBackground(new Color(0, 0, 139)); // Dark blue
+    theBtRStock.setForeground(Color.WHITE);          // Set text color to white
+    theBtRStock.setBorderPainted(false);
+    cp.add(theBtRStock);                          // Add to canvas
 
-    theBtClear.setBounds( 16, 25+60*2, 80, 40 );    // Buy button 
+    theBtClear.setBounds(16, 25 + 60 * 2, 80, 40);    // Clear button 
     theBtClear.addActionListener(                   // Call back code
-      e -> cont.doClear() );
-    cp.add( theBtClear );                           //  Add to canvas
+      e -> cont.doClear());
+    theBtClear.setBackground(new Color(0, 0, 139)); // Dark blue
+    theBtClear.setForeground(Color.WHITE);          // Set text color to white
+    theBtClear.setBorderPainted(false);
+    cp.add(theBtClear);                           // Add to canvas
 
- 
-    theAction.setBounds( 110, 25 , 270, 20 );       // Message area
-    theAction.setText( "" );                        // Blank
-    cp.add( theAction );                            //  Add to canvas
+    theAction.setBounds(110, 25, 270, 20);           // Message area
+    theAction.setText("");                           // Blank
+    theAction.setForeground(Color.WHITE);            // Set text color to white
+    cp.add(theAction);                              // Add to canvas
 
-    theInput.setBounds( 110, 50, 120, 40 );         // Input Area
-    theInput.setText("");                           // Blank
-    cp.add( theInput );                             //  Add to canvas
+    theInput.setBounds(110, 50, 120, 40);            // Input Area
+    theInput.setText("");                            // Blank
+    theInput.setBackground(Color.WHITE);             // Set background color to white
+    theInput.setForeground(Color.BLACK);             // Set text color to black
+    cp.add(theInput);                               // Add to canvas
     
-    theInputNo.setBounds( 260, 50, 120, 40 );       // Input Area
-    theInputNo.setText("0");                        // 0
-    cp.add( theInputNo );                           //  Add to canvas
+    theInputNo.setBounds(260, 50, 120, 40);          // Input Area
+    theInputNo.setText("0");                         // 0
+    theInputNo.setBackground(Color.WHITE);           // Set background color to white
+    theInputNo.setForeground(Color.BLACK);           // Set text color to black
+    cp.add(theInputNo);                             // Add to canvas
 
-    theSP.setBounds( 110, 100, 270, 160 );          // Scrolling pane
-    theOutput.setText( "" );                        //  Blank
-    theOutput.setFont( f );                         //  Uses font  
-    cp.add( theSP );                                //  Add to canvas
-    theSP.getViewport().add( theOutput );           //  In TextArea
-    rootWindow.setVisible( true );                  // Make visible
+    theSP.setBounds(110, 100, 270, 160);             // Scrolling pane
+    theOutput.setText("");                           // Blank
+    theOutput.setFont(f);                            // Uses font  
+    theOutput.setBackground(Color.WHITE);            // Set background color to white
+    theOutput.setForeground(Color.BLACK);            // Set text color to black
+    cp.add(theSP);                                  // Add to canvas
+    theSP.getViewport().add(theOutput);              // In TextArea
+    
+    rootWindow.setVisible(true);                    // Make visible
     theInput.requestFocus();                        // Focus is here
   }
   
-  public void setController( BackDoorController c )
+  public void setController(BackDoorController c)
   {
     cont = c;
   }
@@ -108,13 +126,13 @@ public class BackDoorView implements Observer
    * @param arg      Specific args 
    */
   @Override
-  public void update( Observable modelC, Object arg )
+  public void update(Observable modelC, Object arg)
   {
     BackDoorModel model  = (BackDoorModel) modelC;
     String        message = (String) arg;
-    theAction.setText( message );
+    theAction.setText(message);
     
-    theOutput.setText( model.getBasket().getDetails() );
+    theOutput.setText(model.getBasket().getDetails());
     theInput.requestFocus();
   }
 

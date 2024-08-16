@@ -16,7 +16,7 @@ import java.util.Observer;
 
 public class CollectView implements Observer
 {
- private static final String COLLECT = "Collect";
+  private static final String COLLECT = "Collect";
   
   private static final int H = 300;       // Height of window pixels
   private static final int W = 400;       // Width  of window pixels
@@ -25,7 +25,7 @@ public class CollectView implements Observer
   private final JTextField  theInput   = new JTextField();
   private final JTextArea   theOutput  = new JTextArea();
   private final JScrollPane theSP      = new JScrollPane();
-  private final JButton     theBtCollect= new JButton( COLLECT );
+  private final JButton     theBtCollect= new JButton(COLLECT);
  
   private OrderProcessing   theOrder = null;
   private CollectController cont     = null;
@@ -37,46 +37,57 @@ public class CollectView implements Observer
    * @param x     x-cordinate of position of window on screen 
    * @param y     y-cordinate of position of window on screen  
    */
-  public CollectView(  RootPaneContainer rpc, MiddleFactory mf, int x, int y )
+  public CollectView(RootPaneContainer rpc, MiddleFactory mf, int x, int y)
   {
     try                                           // 
     {      
       theOrder = mf.makeOrderProcessing();        // Process order
-    } catch ( Exception e )
+    } catch (Exception e)
     {
-      System.out.println("Exception: " + e.getMessage() );
+      System.out.println("Exception: " + e.getMessage());
     }
     Container cp         = rpc.getContentPane();    // Content Pane
     Container rootWindow = (Container) rpc;         // Root Window
     cp.setLayout(null);                             // No layout manager
-    rootWindow.setSize( W, H );                     // Size of Window
-    rootWindow.setLocation( x, y );
+    rootWindow.setSize(W, H);                       // Size of Window
+    rootWindow.setLocation(x, y);
 
-    Font f = new Font("Monospaced",Font.PLAIN,12);  // Font f is
+    // Set the background color to dark grey for the content pane
+    cp.setBackground(Color.DARK_GRAY);
+    
+    Font f = new Font("Monospaced", Font.PLAIN, 12);  // Font f is
 
-    theBtCollect.setBounds( 16, 25+60*0, 80, 40 );  // Check Button
-    theBtCollect.addActionListener(                 // Call back code
-      e -> cont.doCollect( theInput.getText()) );
-    cp.add( theBtCollect );                         //  Add to canvas
+    theBtCollect.setBounds(16, 25 + 60 * 0, 80, 40);  // Collect Button
+    theBtCollect.addActionListener(e -> cont.doCollect(theInput.getText()));
+    theBtCollect.setBackground(new Color(0, 0, 139)); // Dark blue
+    theBtCollect.setForeground(Color.WHITE);          // Set text color to white
+    theBtCollect.setBorderPainted(false);
+    cp.add(theBtCollect);                            // Add to canvas
 
-    theAction.setBounds( 110, 25 , 270, 20 );       // Message area
-    theAction.setText( "" );                        // Blank
-    cp.add( theAction );                            //  Add to canvas
+    theAction.setBounds(110, 25, 270, 20);           // Message area
+    theAction.setText("");                           // Blank
+    theAction.setForeground(Color.WHITE);            // Set text color to white
+    cp.add(theAction);                              // Add to canvas
 
-    theInput.setBounds( 110, 50, 270, 40 );         // Input Area
-    theInput.setText("");                           // Blank
-    cp.add( theInput );                             //  Add to canvas
+    theInput.setBounds(110, 50, 270, 40);            // Input Area
+    theInput.setText("");                            // Blank
+    theInput.setBackground(Color.WHITE);             // Set background color to white
+    theInput.setForeground(Color.BLACK);             // Set text color to black
+    cp.add(theInput);                               // Add to canvas
 
-    theSP.setBounds( 110, 100, 270, 160 );          // Scrolling pane
-    theOutput.setText( "" );                        //  Blank
-    theOutput.setFont( f );                         //  Uses font  
-    cp.add( theSP );                                //  Add to canvas
-    theSP.getViewport().add( theOutput );           //  In TextArea
-    rootWindow.setVisible( true );                  // Make visible
+    theSP.setBounds(110, 100, 270, 160);             // Scrolling pane
+    theOutput.setText("");                           // Blank
+    theOutput.setFont(f);                            // Uses font  
+    theOutput.setBackground(Color.WHITE);            // Set background color to white
+    theOutput.setForeground(Color.BLACK);            // Set text color to black
+    cp.add(theSP);                                  // Add to canvas
+    theSP.getViewport().add(theOutput);              // In TextArea
+    
+    rootWindow.setVisible(true);                    // Make visible
     theInput.requestFocus();                        // Focus is here
   }  
   
-  public void setController( CollectController c )
+  public void setController(CollectController c)
   {
     cont = c;
   }
@@ -87,13 +98,13 @@ public class CollectView implements Observer
    * @param arg      Specific args 
    */
   @Override 
-  public void update( Observable modelC, Object arg )
+  public void update(Observable modelC, Object arg)
   {
     CollectModel model  = (CollectModel) modelC;
     String        message = (String) arg;
-    theAction.setText( message );
+    theAction.setText(message);
     
-    theOutput.setText( model.getResponce() );
+    theOutput.setText(model.getResponce());
     theInput.requestFocus();               // Focus is here
   }
 

@@ -10,8 +10,6 @@ import java.util.Stack;
 
 /**
  * Implements the Model of the cashier client
- * @author Mike Smith University of Brighton
- * @version 1.0
  */
 public class CashierModel extends Observable {
     private enum State { process, checked }
@@ -27,8 +25,10 @@ public class CashierModel extends Observable {
 
     private Stack<CashierModel> undoStack = new Stack<>();
 
-    
     private Product lastAddedProduct = null;
+
+    private static final String PROMO_CODE = "bigsale";
+    private static final double DISCOUNT_RATE = 0.15; // 15%
 
     public CashierModel(MiddleFactory mf) {
         try {
@@ -44,11 +44,11 @@ public class CashierModel extends Observable {
         return theBasket;
     }
 
-    public void doCheck(String productNum) {
+    public void doCheck(String productNum) throws Exception { // Updated method signature
         String theAction = "";
-        theState  = State.process;
-        pn  = productNum.trim();
-        int amount  = 1;
+        theState = State.process;
+        pn = productNum.trim();
+        int amount = 1;
         try {
             if (theStock.exists(pn)) {
                 Product pr = theStock.getDetails(pn);
@@ -66,19 +66,20 @@ public class CashierModel extends Observable {
             } else {
                 theAction = "Unknown product number " + pn;
             }
-        } catch (StockException e) {
+        } catch (Exception e) {
             DEBUG.error("%s\n%s",
                     "CashierModel.doCheck", e.getMessage());
             theAction = e.getMessage();
+            throw e; // Re-throwing exception
         }
-        saveToUndoStack();  
+        saveToUndoStack();
         setChanged();
         notifyObservers(theAction);
     }
 
     public void doBuy() {
         String theAction = "";
-        int amount  = 1;
+        int amount = 1;
         try {
             if (theState != State.checked) {
                 theAction = "Check if OK with customer first";
@@ -90,27 +91,27 @@ public class CashierModel extends Observable {
                 if (stockBought) {
                     makeBasketIfReq();
                     theBasket.add(theProduct);
-                    lastAddedProduct = theProduct;  
+                    lastAddedProduct = theProduct;
                     theAction = "Purchased " +
                             theProduct.getDescription();
                 } else {
                     theAction = "!!! Not in stock";
                 }
             }
-        } catch (StockException e) {
+        } catch (Exception e) {
             DEBUG.error("%s\n%s",
                     "CashierModel.doBuy", e.getMessage());
             theAction = e.getMessage();
         }
         theState = State.process;
-        saveToUndoStack();  
+        saveToUndoStack();
         setChanged();
         notifyObservers(theAction);
     }
 
     public void doBought() {
         String theAction = "";
-        int amount  = 1;
+        int amount = 1;
         try {
             if (theBasket != null &&
                     theBasket.size() >= 1) {
@@ -126,7 +127,7 @@ public class CashierModel extends Observable {
             theAction = e.getMessage();
         }
         theBasket = null;
-        saveToUndoStack();  
+        saveToUndoStack();
         setChanged();
         notifyObservers(theAction);
     }
@@ -136,14 +137,49 @@ public class CashierModel extends Observable {
             CashierModel previousState = undoStack.pop();
             copyStateFrom(previousState);
 
-            
             if (lastAddedProduct != null && theBasket != null) {
                 theBasket.remove(lastAddedProduct);
-                lastAddedProduct = null;  
+                lastAddedProduct = null;
             }
 
             setChanged();
             notifyObservers("Undo");
+        }
+    }
+
+    public void doSale(String promoCode) {
+        if (PROMO_CODE.equals(promoCode)) {
+            double totalDiscount = 0.0;
+            if (theBasket != null) {
+                for (Product pr : theBasket) {
+                    totalDiscount += pr.getPrice() * pr.getQuantity();
+                }
+                totalDiscount *= DISCOUNT_RATE;
+                setChanged();
+                notifyObservers(String.format("Promo applied: %s%% off. Total discount: %.2f", DISCOUNT_RATE * 100, totalDiscount));
+                // Apply discount to basket
+                for (Product pr : theBasket) {
+                    pr.setPrice(pr.getPrice() * (1 - DISCOUNT_RATE));
+                }
+                theBasket.setSaleApplied(true); // Set sale applied flag
+            } else {
+                setChanged();
+                notifyObservers("No basket available for discount.");
+            }
+        } else {
+            setChanged();
+            notifyObservers("Invalid promo code.");
+        }
+    }
+
+    public void doTip(double tipAmount) {
+        if (theBasket != null) {
+            theBasket.setTipAmount(tipAmount);
+            setChanged();
+            notifyObservers(String.format("Tip applied: %.2f", tipAmount));
+        } else {
+            setChanged();
+            notifyObservers("No basket available for adding tip.");
         }
     }
 

@@ -25,11 +25,11 @@ public class PickView implements Observer
   private final JLabel      theAction  = new JLabel();
   private final JTextArea   theOutput  = new JTextArea();
   private final JScrollPane theSP      = new JScrollPane();
-  private final JButton     theBtPicked= new JButton( PICKED );
+  private final JButton     theBtPicked= new JButton(PICKED);
  
   private OrderProcessing theOrder     = null;
   
-  private PickController cont= null;
+  private PickController cont = null;
 
   /**
    * Construct the view
@@ -38,41 +38,51 @@ public class PickView implements Observer
    * @param x     x-cordinate of position of window on screen 
    * @param y     y-cordinate of position of window on screen  
    */
-  public PickView(  RootPaneContainer rpc, MiddleFactory mf, int x, int y )
+  public PickView(RootPaneContainer rpc, MiddleFactory mf, int x, int y)
   {
     try                                           // 
     {      
       theOrder = mf.makeOrderProcessing();        // Process order
-    } catch ( Exception e )
+    } catch (Exception e)
     {
-      System.out.println("Exception: " + e.getMessage() );
+      System.out.println("Exception: " + e.getMessage());
     }
     Container cp         = rpc.getContentPane();    // Content Pane
     Container rootWindow = (Container) rpc;         // Root Window
     cp.setLayout(null);                             // No layout manager
-    rootWindow.setSize( W, H );                     // Size of Window
-    rootWindow.setLocation( x, y );
-    
-    Font f = new Font("Monospaced",Font.PLAIN,12);  // Font f is
+    rootWindow.setSize(W, H);                       // Size of Window
+    rootWindow.setLocation(x, y);
 
-    theBtPicked.setBounds( 16, 25+60*0, 80, 40 );   // Check Button
+    // Set the background color to dark grey
+    cp.setBackground(Color.DARK_GRAY);
+
+    Font f = new Font("Monospaced", Font.PLAIN, 12);  // Font f is
+
+    theBtPicked.setBounds(16, 25 + 60 * 0, 80, 40);   // Picked Button
     theBtPicked.addActionListener(                   // Call back code
-      e -> cont.doPick() );
-    cp.add( theBtPicked );                          //  Add to canvas
+      e -> cont.doPick());
+    theBtPicked.setOpaque(true);
+    theBtPicked.setBackground(new Color(0, 0, 139)); // Dark blue
+    theBtPicked.setForeground(Color.WHITE);          // Set text color to white
+    theBtPicked.setBorderPainted(false);
+    cp.add(theBtPicked);                           // Add to canvas
 
-    theAction.setBounds( 110, 25 , 270, 20 );       // Message area
-    theAction.setText( "" );                        // Blank
-    cp.add( theAction );                            //  Add to canvas
+    theAction.setBounds(110, 25, 270, 20);           // Message area
+    theAction.setText("");                           // Blank
+    theAction.setForeground(Color.WHITE);            // Set text color to white
+    cp.add(theAction);                              // Add to canvas
 
-    theSP.setBounds( 110, 55, 270, 205 );           // Scrolling pane
-    theOutput.setText( "" );                        //  Blank
-    theOutput.setFont( f );                         //  Uses font  
-    cp.add( theSP );                                //  Add to canvas
-    theSP.getViewport().add( theOutput );           //  In TextArea
-    rootWindow.setVisible( true );                  // Make visible
+    theSP.setBounds(110, 55, 270, 205);              // Scrolling pane
+    theOutput.setText("");                           // Blank
+    theOutput.setFont(f);                            // Uses font  
+    theOutput.setForeground(Color.BLACK);            // Set text color to black
+    cp.add(theSP);                                  // Add to canvas
+    theSP.getViewport().add(theOutput);              // In TextArea
+    
+    rootWindow.setVisible(true);                    // Make visible
   }
   
-  public void setController( PickController c )
+  public void setController(PickController c)
   {
     cont = c;
   }
@@ -83,16 +93,16 @@ public class PickView implements Observer
    * @param arg      Specific args 
    */
   @Override
-  public void update( Observable modelC, Object arg )
+  public void update(Observable modelC, Object arg)
   {
     PickModel model  = (PickModel) modelC;
     String        message = (String) arg;
-    theAction.setText( message );
+    theAction.setText(message);
     
-    Basket basket =  model.getBasket();
-    if ( basket != null )
+    Basket basket = model.getBasket();
+    if (basket != null)
     {
-      theOutput.setText( basket.getDetails() );
+      theOutput.setText(basket.getDetails());
     } else {
       theOutput.setText("");
     }
